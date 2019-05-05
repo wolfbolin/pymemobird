@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Common package
-import io
 import json
 import base64
 import requests
@@ -12,7 +11,7 @@ class Paper:
     """
     保存纸条相关功能
     """
-    content = None
+    content = []
     paper_id = None
     print_flag = None
     access_key = None
@@ -47,7 +46,7 @@ class Paper:
         :return: Paper对象
         """
         content = base64.b64encode(text.encode('gbk'))
-        self.content = 'T:{}'.format(content)
+        self.content.append('T:{}'.format(str(content, 'utf8')))
         return self
 
     def add_pic(self, file):
@@ -58,9 +57,8 @@ class Paper:
         :return: Paper对象
         """
         if self.is_init():
-            pic = io.StringIO()
-            pic.write(file.read())
-            pic_base64 = base64.b64encode(pic.getvalue())
+            file_data = file.read()
+            pic_base64 = base64.b64encode(file_data)
             data = {
                 'ak': self.access_key,
                 'imgBase64String': pic_base64
@@ -70,11 +68,12 @@ class Paper:
                 Util.print_g('转换图片...OK {}'.format(http_result.status_code))
             else:
                 Util.print_r('转换图片...RE {}'.format(http_result.status_code))
+                raise Util.NetworkError('转换图片失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
                 raise Util.NetworkError('转换图片失败：%s' % json_data['showapi_res_error'])
             else:
-                self.content = 'P:{}'.format(json_data['result'])
+                self.content.append('P:{}'.format(json_data['result']))
                 return self
         else:
             raise Util.OperateError('纸条类未完成初始化')
@@ -84,24 +83,35 @@ class Paper:
         获取打印内容全文
         :return: 格式化纸条内容
         """
-        if self.content is None or len(self.content) == 0:
+        if self.content is None or len(self.content) == 0 or isinstance(self.content, list) is False:
             raise Util.OperateError('未设置纸条内容，无法打印')
         else:
             return '|'.join(self.content)
 
-    def status(self, pid, flag):
+    def update(self, pid=None, flag=None):
         """
         更新纸条打印状态
         :param pid: 纸条编号
         :param flag: 打印状态
+        :return: 打印状态
         """
         self.paper_id = pid
         if flag == 1:
             self.print_flag = 'success'
-        elif flag == 2:
+        elif flag == 2 or flag == 0:
             self.print_flag = 'printing'
         else:
             self.print_flag = 'error'
+
+    def status(self):
+        """
+        展示纸条打印状态
+        :return:
+        """
+        if self.is_send():
+            return self.print_flag
+        else:
+            raise Util.OperateError('纸条未发送至打印队列')
 
     def sync(self):
         """
@@ -119,11 +129,12 @@ class Paper:
                 Util.print_g('同步状态...OK {}'.format(http_result.status_code))
             else:
                 Util.print_r('同步状态...RE {}'.format(http_result.status_code))
+                raise Util.NetworkError('同步状态失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
                 raise Util.NetworkError('状态同步失败：%s' % json_data['showapi_res_error'])
             else:
-                self.status(json_data['printcontentID'], json_data['printflag'])
+                self.update(json_data['printcontentid'], json_data['printflag'])
                 return self
         else:
             raise Util.OperateError('纸条内容未发送至打印机')

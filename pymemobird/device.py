@@ -19,7 +19,7 @@ class Device:
         初始化打印机编号
         :param memobird_id: 咕咕机设备编号
         """
-        self.memobird = memobird_id
+        self.memobird_id = memobird_id
 
     def is_init(self):
         if self.memobird_id is None:
@@ -55,6 +55,7 @@ class Device:
                 Util.print_g('绑定用户...OK {}'.format(http_result.status_code))
             else:
                 Util.print_r('绑定用户...RE {}'.format(http_result.status_code))
+                raise Util.NetworkError('绑定用户失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
                 raise Util.NetworkError('绑定设备失败：%s' % json_data['showapi_res_error'])
@@ -77,19 +78,20 @@ class Device:
                 'timestamp': Util.time_stamp(),
                 'memobirdID': self.memobird_id,
                 'userID': self.user_id,
-                'printcontent': paper.get_content
+                'printcontent': paper.get_content()
             }
             http_result = requests.get(Util.api_url('print'), data=data)
             if http_result.status_code == 200:
                 Util.print_g('打印纸条...OK {}'.format(http_result.status_code))
             else:
                 Util.print_r('打印纸条...RE {}'.format(http_result.status_code))
+                raise Util.NetworkError('纸条打印失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
                 raise Util.NetworkError('纸条打印失败：%s' % json_data['showapi_res_error'])
             else:
                 # 修改纸条发送状态（信息填充）
-                paper.status(json_data['printcontentid'], json_data['result'])
+                paper.update(json_data['printcontentid'], json_data['result'])
                 return paper
         else:
             raise Util.OperateError('设备未绑定用户或未成功')
