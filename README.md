@@ -1,2 +1,250 @@
 # pymemobird
-咕咕机开发工具包--Python
+![Windows](https://img.shields.io/badge/Windows-support-green.svg)
+![Linux](https://img.shields.io/badge/Linux-support-green.svg)
+![Python](https://img.shields.io/badge/Python-3.6-blue.svg)
+![License](https://img.shields.io/badge/License-MPL_2.0-orange.svg)
+
+咕咕机开发工具包，Github源码地址：[https://github.com/wolfbolin/pymemobird](https://github.com/wolfbolin/pymemobird)
+
+> 本工具包使用官方提供的API接口进行开发，支持常用接口的调用。采用面向对象的编程形式，减少使用者对调用过程的学习过程。理论上可在全系列的打印机上运行，采用蓝牙的打印机需要保持手机连接。
+
+*更新日志请看到[第三章](#changelog)*
+
+## 一、安装方式
+
+请使用pip安装该工具包
+
+```
+$ pip install pymemobird
+```
+
+## 二、使用说明
+
+### 1、使用前提
+
+首先你需要拥有一台**咕咕机**并且申请开发者KEY，开发者权限申请网址：[http://open.memobird.cn](http://open.memobird.cn)
+
+#### 1.1、数据字典
+
+| 单词          | 示例                             | 含义                  |
+| ------------- | -------------------------------- | --------------------- |
+| access_key    | 7ffa6c1fc9f340e6969c74f1d4b6aa50 | 开发者凭证/申请的ak值 |
+| user_identify | 2778553                          | 咕咕号/用户唯一标识符 |
+| user_id       | 840268                           | 绑定设备后的用户凭证  |
+| memobird_id   | 9d15e1b2671043ee                 | 咕咕机设备编号        |
+| paper_id      | 35331944                         | 纸条编号              |
+| print_flag    | 'success','printing','error'     | 纸条状态              |
+
+#### 1.2、代码样例
+
+```python
+import pymemobird
+
+if __name__ == '__main__':
+    # 初始化用户
+    access_key = '7ffa6c1fc9f340e6969c74f1d4b6aa50'
+    user_identify = '2778553'
+    user = pymemobird.User(access_key, user_identify)
+    # 验证初始化（可选）
+    print(user.is_init())
+    # 初始化设备
+    memobird_id = '9d15e1b2671043ee'
+    device = pymemobird.Device(9d15e1b2671043ee)
+    # 验证初始化（可选）
+    print(device.is_init())
+    # 绑定用户
+    device.bind_user(user)
+    # 验证绑定状态（可选）
+    print(device.is_bind())
+```
+
+
+
+### 2、用户类User
+
+该类功能较少，仅保存了用户的凭证信息
+
+#### 2.1、声明用户类
+
+* 函数名
+  * `__init__(self, access_key, user_identify)`
+
+* 参数
+  * `access_key`：开发者访问凭证
+  * `user_identify`：用户身份标识
+
+#### 2.2、初始化验证
+
+验证用户实例是否已经传入的初始化参数
+
+* 函数名
+  * `is_init(self)`
+
+* 参数
+  * 无
+* 返回
+  * 检测结果True/False
+
+### 3、设备类Device
+
+完成设备绑定，纸条打印等功能
+
+#### 3.1、声明用户类
+
+* 函数名
+  
+* `__init__(self, memobird_id)`
+  
+* 参数
+  * `memobird_id`：咕咕机设备编号
+  
+
+#### 3.2、初始化验证
+
+验证设备实例是否已经传入的初始化参数
+
+* 函数名
+  * `is_init(self)`
+
+* 参数
+  * 无
+* 返回
+  * 检测结果True/False
+
+#### 3.3、用户绑定
+
+将用户标识与设备关联，获取纸条发送的凭证信息
+
+- 函数名
+  - `bind_user(self, user)`
+- 参数
+  - 用户类（User）实例
+- 返回
+  - 修改并返回设备实例
+- 异常
+  - 操作异常OperateError：使用未完成初始化的类
+  - 网络异常NetworkError：在绑定设备时发生异常
+
+#### 3.4、绑定验证
+
+验证设备实例是否已经绑定用户
+
+- 函数名
+  - `is_bind(self)`
+- 参数
+  - 无
+- 返回
+  - 检测结果True/False
+
+#### 3.5、打印纸条
+
+将纸条类中的信息发送至打印队列，并更新纸条状态
+
+- 函数名
+  - `print_paper(self, paper)`
+- 参数
+  - 纸条类（Paper）实例
+- 返回
+  - 修改并返回纸条实例
+- 异常
+  - 操作异常OperateError：使用未完成初始化的类
+  - 网络异常NetworkError：在打印纸条时发生异常
+
+### 4、纸条类Paper
+
+该类可完成纸条内容的连接，并可以刷新纸条打印状态
+
+#### 4.1、声明用户类
+
+- 函数名
+- `__init__(self, access_key)`
+- 参数
+  - `access_key`：开发者访问凭证
+
+#### 3.2、初始化验证
+
+验设备实例是否已经传入的初始化参数
+
+- 函数名
+  - `is_init(self)`
+- 参数
+  - 无
+- 返回
+  - 检测结果True/False
+
+#### 3.3、纸条发送验证
+
+验证纸条打印任务是否已经发送至打印队列
+
+- 函数名
+  - `is_send(self)`
+- 参数
+  - 无
+- 返回
+  - 检测结果True/False
+
+
+
+#### 3.4、添加文本
+
+在纸条最后添加文本（并不会立即打印）
+
+- 函数名
+  - `add_text(self, text)`
+- 参数
+  - `text`：需要在纸条上打印的纯文本信息，支持中文（GBK）打印，支持转义符
+- 返回
+  - 修改并返回纸条类（Paper）实例
+
+#### 3.5、添加图片
+
+在纸条最后添加图片（并不会立即打印）
+
+程序将利用官方API完成图片的预处理，不使用PIL
+
+- 函数名
+  - `add_pic(self, file)`
+- 参数
+  - `file`：需要在纸条上打印的图片对象（需要支持read()获取字符串的对象即可），支持JPG、PNG格式
+- 返回
+  - 修改并返回纸条类（Paper）实例
+- 异常
+  - 操作异常OperateError：使用未完成初始化的类
+  - 网络异常NetworkError：在打印纸条时发生异常
+
+#### 3.6、同步纸条状态
+
+同步此刻该纸条的打印状态
+
+- 函数名
+  - `sync(self)`
+- 参数
+  - 无
+- 返回
+  - 修改并返回纸条类（Paper）实例
+- 异常
+  - 操作异常OperateError：使用未完成初始化的类
+  - 网络异常NetworkError：在打印纸条时发生异常
+
+#### 3.7、获取纸条全文
+
+响应值为经过编码的纸条内容。
+
+包内部调用，若有需要请查看源码。
+
+#### 3.8、更新纸条状态
+
+包内部调用，若有需要请查看源码。
+
+### 三、<span id="changelog">更新日志</span>
+
+### v0.0.1
+
+测试版
+
+
+
+
+
+
+
