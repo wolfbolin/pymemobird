@@ -40,6 +40,7 @@ $ pip install pymemobird
 ```python
 # -*- coding: utf-8 -*-
 import time
+import base64
 import pymemobird
 
 if __name__ == '__main__':
@@ -68,6 +69,12 @@ if __name__ == '__main__':
     paper.add_text('Hello,world!你好呀！')
     pic = open('Logo.jpg', 'rb')
     paper.add_pic(pic)
+    pic.close()
+    pic = open('Logo.jpg', 'rb')
+    pic_data = pic.read()
+    pic_base64 = base64.b64encode(pic_data)
+    paper.add_base64_pic(pic_base64)
+    pic.close()
 
     # 打印纸条相关操作
     print('开始打印...%s' % paper.is_send())  # 验证纸条是否已经发送至打印列表
@@ -233,7 +240,23 @@ if __name__ == '__main__':
   - 操作异常OperateError：使用未完成初始化的类
   - 网络异常NetworkError：在打印纸条时发生异常
 
-#### 3.4、获取打印状态
+#### 3.6、添加Base64图片
+
+在纸条最后添加Base64编码的图片（并不会立即打印），可以多次添加。
+
+程序将利用官方API完成图片的预处理，不使用PIL
+
+- 函数名
+  - `add_base64_pic(self, file)`
+- 参数
+  - `file`：图片经过Base64编码的字符串，支持JPG、PNG格式
+- 返回
+  - 修改并返回纸条类（Paper）实例
+- 异常
+  - 操作异常OperateError：使用未完成初始化的类
+  - 网络异常NetworkError：在打印纸条时发生异常
+
+#### 3.7、获取打印状态
 
 获取当前纸条的打印状态，可能的状态有`success`,`printing`,`error`
 
@@ -246,7 +269,7 @@ if __name__ == '__main__':
 - 异常
   - 操作异常OperateError：使用未完成初始化的类
 
-#### 3.6、同步纸条状态
+#### 3.8、同步纸条状态
 
 同步此刻该纸条的打印状态
 
@@ -260,13 +283,13 @@ if __name__ == '__main__':
   - 操作异常OperateError：使用未完成初始化的类
   - 网络异常NetworkError：在打印纸条时发生异常
 
-#### 3.7、获取纸条全文
+#### 3.9、获取纸条全文
 
 响应值为经过编码的纸条内容。
 
 包内部调用，若有需要请查看源码。
 
-#### 3.8、更新纸条状态
+#### 3.10、更新纸条状态
 
 包内部调用，若有需要请查看源码。
 
@@ -281,6 +304,14 @@ if __name__ == '__main__':
 正式版
 
 通过测试，修复若干BUG，样例可运行
+
+### v0.2.0
+
+正式版
+
+测试问题：纸条打印顺序与添加顺序不同
+
+新增功能：`add_base64_pic`函数，可实现图片Base64数据直接添加。
 
 
 

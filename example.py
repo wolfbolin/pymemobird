@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
+import base64
 import pymemobird
 
 if __name__ == '__main__':
@@ -28,6 +29,12 @@ if __name__ == '__main__':
     paper.add_text('Hello,world!你好呀！')
     pic = open('Logo.jpg', 'rb')
     paper.add_pic(pic)
+    pic.close()
+    pic = open('Logo.jpg', 'rb')
+    pic_data = pic.read()
+    pic_base64 = base64.b64encode(pic_data)
+    paper.add_base64_pic(pic_base64)
+    pic.close()
 
     # 打印纸条相关操作
     print('开始打印...%s' % paper.is_send())  # 验证纸条是否已经发送至打印列表

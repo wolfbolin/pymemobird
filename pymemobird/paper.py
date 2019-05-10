@@ -78,6 +78,33 @@ class Paper:
         else:
             raise Util.OperateError('纸条类未完成初始化')
 
+    def add_base64_pic(self, base64_pic):
+        """
+        添加图片类型纸条内容，兼容JPG、PNG
+        通过网络完成图片转换，避免使用PIL
+        :param base64_pic: 经过Base64编码的图片
+        :return: Paper对象
+        """
+        if self.is_init():
+            data = {
+                'ak': self.access_key,
+                'imgBase64String': base64_pic
+            }
+            http_result = requests.get(Util.api_url('pic'), data=data)
+            if http_result.status_code == 200:
+                Util.print_g('转换图片...OK {}'.format(http_result.status_code))
+            else:
+                Util.print_r('转换图片...RE {}'.format(http_result.status_code))
+                raise Util.NetworkError('转换图片失败：HTTP {}'.format(http_result.status_code))
+            json_data = json.loads(http_result.text)
+            if json_data['showapi_res_code'] != 1:
+                raise Util.NetworkError('转换图片失败：%s' % json_data['showapi_res_error'])
+            else:
+                self.content.append('P:{}'.format(json_data['result']))
+                return self
+        else:
+            raise Util.OperateError('纸条类未完成初始化')
+
     def get_content(self):
         """
         获取打印内容全文
