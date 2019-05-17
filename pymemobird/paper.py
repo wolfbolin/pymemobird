@@ -21,6 +21,9 @@ class Paper:
         初始化访问凭证
         :param access_key: 开发者访问凭证
         """
+        self.content = []
+        self.paper_id = None
+        self.print_flag = None
         self.access_key = access_key
 
     def is_init(self):

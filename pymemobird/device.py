@@ -19,6 +19,8 @@ class Device:
         初始化打印机编号
         :param memobird_id: 咕咕机设备编号
         """
+        self.user_id = None
+        self.access_key = None
         self.memobird_id = memobird_id
 
     def is_init(self):
