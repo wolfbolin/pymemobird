@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 # Common package
 import json
 import base64
 import requests
 # Personal package
+import pymemobird
 from .util import Util
 
 
@@ -66,11 +67,16 @@ class Paper:
                 'ak': self.access_key,
                 'imgBase64String': pic_base64
             }
-            http_result = requests.get(Util.api_url('pic'), data=data)
+            proxies = {
+                'http': pymemobird.http_proxy,
+                'https': pymemobird.http_proxy
+            }
+            http_result = requests.post(Util.api_url('pic'), data=data, proxies=proxies)
             if http_result.status_code == 200:
-                Util.print_g('转换图片...OK {}'.format(http_result.status_code))
+                # Util.print_g('转换图片...OK {}'.format(http_result.status_code))
+                pass
             else:
-                Util.print_r('转换图片...RE {}'.format(http_result.status_code))
+                # Util.print_r('转换图片...RE {}'.format(http_result.status_code))
                 raise Util.NetworkError('转换图片失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
@@ -93,11 +99,16 @@ class Paper:
                 'ak': self.access_key,
                 'imgBase64String': base64_pic
             }
-            http_result = requests.get(Util.api_url('pic'), data=data)
+            proxies = {
+                'http': pymemobird.http_proxy,
+                'https': pymemobird.https_proxy
+            }
+            http_result = requests.post(Util.api_url('pic'), data=data, proxies=proxies)
             if http_result.status_code == 200:
-                Util.print_g('转换图片...OK {}'.format(http_result.status_code))
+                # Util.print_g('转换图片...OK {}'.format(http_result.status_code))
+                pass
             else:
-                Util.print_r('转换图片...RE {}'.format(http_result.status_code))
+                # Util.print_r('转换图片...RE {}'.format(http_result.status_code))
                 raise Util.NetworkError('转换图片失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
@@ -154,11 +165,16 @@ class Paper:
                 'timestamp': Util.time_stamp(),
                 'printcontentid': self.paper_id
             }
-            http_result = requests.get(Util.api_url('status'), data=data)
+            proxies = {
+                'http': pymemobird.http_proxy,
+                'https': pymemobird.https_proxy
+            }
+            http_result = requests.post(Util.api_url('status'), data=data, proxies=proxies)
             if http_result.status_code == 200:
-                Util.print_g('同步状态...OK {}'.format(http_result.status_code))
+                # Util.print_g('同步状态...OK {}'.format(http_result.status_code))
+                pass
             else:
-                Util.print_r('同步状态...RE {}'.format(http_result.status_code))
+                # Util.print_r('同步状态...RE {}'.format(http_result.status_code))
                 raise Util.NetworkError('同步状态失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:

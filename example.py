@@ -1,7 +1,9 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 import time
 import base64
 import pymemobird
+
+pymemobird.http_proxy = "http://127.0.0.1:12639"
 
 if __name__ == '__main__':
     # 申请到的开发者编号

@@ -34,14 +34,20 @@ $ pip install pymemobird
 | memobird_id   | 9d15e1b2671043ee                 | 咕咕机设备编号        |
 | paper_id      | 35331944                         | 纸条编号              |
 | print_flag    | 'success','printing','error'     | 纸条状态              |
+| http_proxy    | "http://127.0.0.1:12639"         | HTTP网络代理          |
+| https_proxy   | "https://example.com"            | HTTPS网络代理         |
+
+
 
 #### 1.2、代码样例
 
 ```python
-# -*- coding: utf-8 -*-
+# coding=utf-8
 import time
 import base64
 import pymemobird
+
+pymemobird.http_proxy = "http://127.0.0.1:12639"
 
 if __name__ == '__main__':
     # 申请到的开发者编号
@@ -84,6 +90,7 @@ if __name__ == '__main__':
         time.sleep(1)
         paper.sync()  # 刷新纸条打印状态
         print('打印状态...%s' % paper.status())  # 获取纸条打印状态
+
 ```
 
 
@@ -295,9 +302,17 @@ if __name__ == '__main__':
 
 ### 三、更新日志
 
-### v0.2.1
+### v0.2.2
 
-修正版
+新增
+
+* 新增代理配置，适应在复杂网络环境下的代理需求
+
+修复
+
+* 换用POST接口，修复GET接口在代理模式下的异常
+
+### v0.2.1
 
 修复
 

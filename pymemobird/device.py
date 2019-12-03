@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 # Common package
 import json
 import requests
 # Personal package
+import pymemobird
 from .util import Util
 
 
@@ -52,11 +53,16 @@ class Device:
                 'memobirdID': self.memobird_id,
                 'useridentifying': user.user_identify
             }
-            http_result = requests.get(Util.api_url('bind'), data=data)
+            proxies = {
+                'http': pymemobird.http_proxy,
+                'https': pymemobird.https_proxy
+            }
+            http_result = requests.post(Util.api_url('bind'), data=data, proxies=proxies)
             if http_result.status_code == 200:
-                Util.print_g('绑定用户...OK {}'.format(http_result.status_code))
+                # Util.print_g('绑定用户...OK {}'.format(http_result.status_code))
+                pass
             else:
-                Util.print_r('绑定用户...RE {}'.format(http_result.status_code))
+                # Util.print_r('绑定用户...RE {}'.format(http_result.status_code))
                 raise Util.NetworkError('绑定用户失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
@@ -82,11 +88,16 @@ class Device:
                 'userID': self.user_id,
                 'printcontent': paper.get_content()
             }
-            http_result = requests.get(Util.api_url('print'), data=data)
+            proxies = {
+                'http': pymemobird.http_proxy,
+                'https': pymemobird.https_proxy
+            }
+            http_result = requests.post(Util.api_url('print'), data=data, proxies=proxies)
             if http_result.status_code == 200:
-                Util.print_g('打印纸条...OK {}'.format(http_result.status_code))
+                # Util.print_g('打印纸条...OK {}'.format(http_result.status_code))
+                pass
             else:
-                Util.print_r('打印纸条...RE {}'.format(http_result.status_code))
+                # Util.print_r('打印纸条...RE {}'.format(http_result.status_code))
                 raise Util.NetworkError('纸条打印失败：HTTP {}'.format(http_result.status_code))
             json_data = json.loads(http_result.text)
             if json_data['showapi_res_code'] != 1:
